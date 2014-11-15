@@ -1,5 +1,4 @@
-import requests, os.path, time
-
+import requests
 WU_KEY = '8987cfce47870546'
 
 def get_yesterdays_rain(zipcode):
@@ -16,15 +15,17 @@ def get_todays_rain(zipcode):
 
 def load_settings():
     settings = []
-    file = open('settings.csv','r')
-    settings = file.readlines()
+    file = open('settings.txt','r')
+    line = file.readline()
+    while line != '':
+        line = line.rstrip('\n')
+        settings.append(line)
+        line = file.readline()
     file.close()
-    settings.rstrip('[')
-    settings.rstrip(']')    
-    settings = settings.split(',')
     return settings
     
 def save_settings(settings):
-    file = open('settings.csv','w')
-    file.write(str(settings))
+    file = open('settings.txt','w')
+    for i in settings:
+        file.write(str(i)+'\n')
     file.close()
