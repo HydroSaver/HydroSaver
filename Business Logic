@@ -1,21 +1,54 @@
-import system, os.path, time
+import requests, datetime, time, tkinter, sys
+from tkinter import *
+from HSgui import *
+from HSdata import *
 
-class HydroSaver:
 
-  def __init__(self):
-     self.
+COOL_SEASON_GRASS = [0.22, 0.42, 0.77, 1.12, 1.47, 1.82, 1.88, 1.62, 1.27, 0.77, 0.35, 0.13]
+WARM_SEASON_GRASS = [0.15, 0.32, 0.58, 0.83, 1.10, 1.37, 1.42, 1.20, 0.95, 0.58, 0.27, 0.10]
+WU_KEY = '8987cfce47870546'
 
-SAND = .2
-LOAM = .1
-CLAY = .07
+def find_sprinkler_time(needed, zipcode, soil):
+    precipitation = float(get_yesterdays_rain(zipcode))
+    forecast = float(get_todays_rain(zipcode))
+    minutes = (needed-(precipitation-forecast-float(soil)))*60
+    return minutes
 
-#user input for Warm/Cool grass then pull Amount
-#needed based on current date info from Wunderground
-#precipitation = previous 12 hour reading
-#forcast = upcoming 12 hour reading
-#soil = use declaration from user input
+def run_sprinkler(minutes):
+    message = 'System will run for '+str(format(minutes, '.1f'))+' minutes'
+    popUp(message)
+    turn_sprinkler_on()
+    #minutes *= 60
+    time.sleep(minutes)
+    turn_sprinkler_off()
 
-def tempGrass(grassType):
+def turn_sprinkler_on():
+    #placeholder function for turning on sprinklers
+    popUp("Turning Sprinklers ON")
+
+def turn_sprinkler_off():
+    #placeholder function for turning off sprinklers
+    popUp("Turning Sprinklers OFF")
+
+def main():
+    mySplash = SplashScreen()
+    myMenu = MainMenu()
+    currentSettings = load_settings()
+    now = datetime.datetime.now()
+    waterNeeded = 0.0
+    
+    if currentSettings[1] == 'WARM':
+        waterNeeded = WARM_SEASON_GRASS[now.month-1]
+    
+    elif currentSettings[1] == 'COOL':
+        waterNeeded = COOL_SEASON_GRASS[now.month-1]
+    
+    sprinklerMinutes = find_sprinkler_time(waterNeeded, currentSettings[0], currentSettings[2])
+    run_sprinkler(sprinklerMinutes)
+
+main()
+
+
     if grassType == "Warm":
         file = open("warm_grass.txt","r")
         warmGrass = file.readline()
